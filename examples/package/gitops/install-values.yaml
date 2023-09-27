@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: official-official-install-values
+  namespace: tap-install
+stringData:
+  values.yaml: |
+    annotationPrefix: x95castle1.org

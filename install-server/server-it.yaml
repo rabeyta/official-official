@@ -1,0 +1,116 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: official-official
+
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: official-official-selfsigned-issuer
+  namespace: official-official
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: official-official-webhook-cert
+  namespace: official-official
+spec:
+  subject:
+    organizations:
+    - vmware
+    organizationalUnits:
+    - tanzu
+  commonName: official-official-webhook.official-official.svc
+  dnsNames:
+  - official-official-webhook.official-official.svc
+  - official-official-webhook.official-official.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: official-official-selfsigned-issuer
+  secretName: official-official-webhook-cert
+  revisionHistoryLimit: 10
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: official-official-webhook
+  namespace: official-official
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: official-official-webhook
+  template:
+    metadata:
+      labels:
+        app: official-official-webhook
+    spec:
+      containers:
+      - name: webhook
+        image: official-official@sha
+        imagePullPolicy: Always
+        env:
+        - name: PORT
+          value: "8443"
+        - name: ANNOTATION_PREFIX
+          value: "example.com"
+        ports:
+        - containerPort: 8443
+          name: webhook
+        livenessProbe:
+          httpGet:
+            scheme: HTTPS
+            port: webhook
+            path: /healthz
+        readinessProbe:
+          httpGet:
+            scheme: HTTPS
+            port: webhook
+            path: /healthz
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 20Mi
+        volumeMounts:
+        - name: certs
+          mountPath: /config/certs
+          readOnly: true
+      volumes:
+        - name: certs
+          secret:
+            defaultMode: 420
+            secretName: official-official-webhook-cert
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: official-official-webhook
+  namespace: official-official
+spec:
+  selector:
+    app: official-official-webhook
+  ports:
+    - protocol: TCP
+      port: 443
+      targetPort: webhook
+---
+apiVersion: conventions.carto.run/v1alpha1
+kind: ClusterPodConvention
+metadata:
+  name: official-official
+spec:
+  webhook:
+    certificate:
+      namespace: official-official
+      name: official-official-webhook-cert
+    clientConfig:
+      service:
+        name: official-official-webhook
+        namespace: official-official

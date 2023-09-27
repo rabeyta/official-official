@@ -1,0 +1,20 @@
+---
+apiVersion: packaging.carvel.dev/v1alpha1
+kind: PackageInstall
+metadata:
+  annotations:
+    kapp.k14s.io/change-group: "official-official"
+    kapp.k14s.io/change-rule.create-order-0: "upsert after upserting official-official-repository"
+    packaging.carvel.dev/downgradable: ""
+  name: official-official
+  namespace: tap-install
+spec:
+  packageRef:
+    refName: official-official.tap.example.com
+    versionSelection:
+      constraints: ">0.0.0"
+      prereleases: {}
+  serviceAccountName: tap-install-sa
+  values:
+    - secretRef:
+        name: official-official-install-values
