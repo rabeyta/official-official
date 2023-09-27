@@ -1,0 +1,79 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: Package
+metadata:
+  creationTimestamp: null
+  name: official-official.tap.example.com.0.1.0
+spec:
+  refName: official-official.tap.example.com
+  releasedAt: "2023-09-27T21:44:42Z"
+  template:
+    spec:
+      deploy:
+      - kapp: {}
+      fetch:
+      - imgpkgBundle:
+          image: registry.harbor.learn.tapsme.org/convention-service/official-official@sha256:454beab69454b7c9e4dfe0c1b577d8a9f70f571d0f5c7f9cb0051c889ea31942
+      template:
+      - ytt:
+          paths:
+          - config
+      - kbld:
+          paths:
+          - '-'
+          - .imgpkg/images.yml
+  valuesSchema:
+    openAPIv3:
+      additionalProperties: false
+      properties:
+        annotationPrefix:
+          default: example.com
+          description: Annotation prefix
+          type: string
+        kubernetes_distribution:
+          default: ""
+          description: K8s Distribution - set to openshift if using openshift
+          type: string
+        kubernetes_version:
+          default: ""
+          description: K8s Version - used for openshift support / logic
+          type: string
+        name:
+          default: official-official
+          description: Name for the convention server
+          type: string
+        namespace:
+          default: official-official
+          description: Deployment namespace for the convention server
+          type: string
+        resources:
+          additionalProperties: false
+          description: Resource limits and requests
+          properties:
+            limits:
+              additionalProperties: false
+              properties:
+                cpu:
+                  default: 100m
+                  description: Limits describes the maximum amount of cpu resources
+                    allowed.
+                  type: string
+                memory:
+                  default: 256Mi
+                  type: string
+              type: object
+            requests:
+              additionalProperties: false
+              properties:
+                cpu:
+                  default: 100m
+                  description: Requests describes the minimum amount of cpu resources
+                    required.
+                  type: string
+                memory:
+                  default: 20Mi
+                  description: Requests describes the minimum amount of memory resources
+                  type: string
+              type: object
+          type: object
+      type: object
+  version: 0.1.0

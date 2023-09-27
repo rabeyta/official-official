@@ -1,0 +1,13 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: PackageMetadata
+metadata:
+  creationTimestamp: null
+  name: official-official.tap.example.com
+spec:
+  displayName: official-official
+  longDescription: awesome things
+  maintainers:
+  - name: dont-email-me@example.com
+  providerName: dont-email-me@example.com
+  shortDescription: enrich some stuff
+  supportDescription: dont-email-me@example.com

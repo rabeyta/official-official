@@ -1,0 +1,15 @@
+apiVersion: packaging.carvel.dev/v1alpha1
+kind: PackageRepository
+metadata:
+  annotations:
+    kctrl.carvel.dev/repository-version: 0.1.0
+  creationTimestamp: "2023-09-27T21:44:45Z"
+  name: official-official-repo.tap.example.com
+spec:
+  fetch:
+    imgpkgBundle:
+      image: harbor-repo.vmware.com/tanzu_practice/conventions/official-official-repo-bundle@sha256:47e0137e1fa500dc7423e070aabc5ac059ee9c1b3663a459c78220ab30366c3a
+status:
+  conditions: null
+  friendlyDescription: ""
+  observedGeneration: 0
